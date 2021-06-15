@@ -33,8 +33,8 @@ salient360_dataset = client.open_file()
 
 for sim in range(config.Sim):
     # Open excel workbook to store outputs
-    qoe_workbook = xlsxwriter.Workbook('../results/qoe_sim'+str(sim+1)+'.xlsx')
-    qoe_worksheet = qoe_workbook.add_worksheet('Sim'+str(sim+1))
+    qoe_workbook = xlsxwriter.Workbook('../results/qoe_sim'+str(sim+1+1)+'.xlsx')
+    qoe_worksheet = qoe_workbook.add_worksheet('Sim'+str(sim+1+1))
 
     for i in range(config.U[-1]):
         qoe_worksheet.write(i+1, 0, 'User'+str(i+1))
@@ -181,8 +181,8 @@ for sim in range(config.Sim):
                     buffer_RR[i] += delta_buffer_RR[i]
 
                     # Buffer max. capacity; Check if there is enough content for playback after buffering
-                    if buffer_RR[i] >= config.B - 0.1:
-                        buffer_RR[i] = config.B
+                    if buffer_RR[i] >= config.init - 0.1:
+                        #buffer_RR[i] = config.B
                         play_RR[i] = 1
                 # BET
                 if RB_allocations_BET[i] != 0:
@@ -190,8 +190,8 @@ for sim in range(config.Sim):
                     buffer_BET[i] += delta_buffer_BET[i]
 
                     # Buffer max. capacity; Check if there is enough content for playback after buffering
-                    if buffer_BET[i] >= config.B - 0.1:
-                        buffer_BET[i] = config.B
+                    if buffer_BET[i] >= config.init - 0.1:
+                        #buffer_BET[i] = config.B
                         play_BET[i] = 1
 
                 # MT
@@ -199,8 +199,8 @@ for sim in range(config.Sim):
                     delta_buffer_MT[i], rx_bits_MT[i], requests_MT[i] = client.buffer_update(user_CQI[i], requests_MT[i], RB_allocations_MT[i], rx_bits_MT[i], t)
                     buffer_MT[i] += delta_buffer_MT[i]
                     
-                    if buffer_MT[i] >= config.B - 0.1:
-                        buffer_MT[i] = config.B
+                    if buffer_MT[i] >= config.init - 0.1:
+                        #buffer_MT[i] = config.B
                         play_MT[i] = 1
 
                 # PF
@@ -209,8 +209,8 @@ for sim in range(config.Sim):
                     buffer_PF[i] += delta_buffer_PF[i]
 
                     # Buffer max. capacity; Check if there is enough content for playback after buffering
-                    if buffer_PF[i] >= config.B - 0.1:
-                        buffer_PF[i] = config.B
+                    if buffer_PF[i] >= config.init - 0.1:
+                        #buffer_PF[i] = config.B
                         play_PF[i] = 1
 
                 # Buffering event
