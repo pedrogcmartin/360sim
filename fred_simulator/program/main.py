@@ -197,7 +197,7 @@ for sim in range(config.Sim):
             # CLIENT SIDE
             for i in range(U):
                 # Get user's current CQI
-                user_CQI[i] = client.get_CQI(i, t)
+                user_CQI[i] = client.get_CQI(i, t, sim)
 
                 # Update buffer
                 # RR
@@ -263,7 +263,7 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if requests_RR[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_RR[i] = client.request_RA(requests_RR[i], t, t_dur_stalls_RR[i],client.throughput_estimation(requests_RR[i]))
+                        requests_RR[i] = client.request_RA(requests_RR[i], t, t_dur_stalls_RR[i],client.throughput_estimation(requests_RR[i], t, i))
 
                     # Client watches TTI seconds of video
                     buffer_RR[i] -= config.TTI
@@ -344,13 +344,15 @@ for sim in range(config.Sim):
 
                 # Report CQI
                 if t % 5 == 0:
-                    reported_CQI[i] = client.get_CQI(i, t)
+                    reported_CQI[i] = user_CQI[i]
 
             # SERVER SIDE
             RB_allocations_RR = np.zeros(U, dtype=int)
             #RB_allocations_BET = np.zeros(U, dtype=int)
             #RB_allocations_MT = np.zeros(U, dtype=int)
             #RB_allocations_PF = np.zeros(U, dtype=int)
+
+            #RB_allocations_RR, total_RB_allocations_RR = server.allocation_RR(requests_RR, RB_allocations_RR, total_RB_allocations_RR, U)
 
             # Allocate each Kth RB
             for k in range(config.K):

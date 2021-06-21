@@ -53,12 +53,14 @@ def compute_QoE(cnt_stalls, t_dur_stalls, requests):
 
     cnt_requests = int((config.T-t_dur_stalls)/1000.0)+1
 
-    for i in range(cnt_requests-5):
-        ql = requests[i+5]['tiles'][0]
+    n = 5
+
+    for i in range(cnt_requests-n):
+        ql = requests[i+n]['tiles'][0]
         sum_ql += ql
         sum_ql_sq += ql**2
 
-    cnt_requests -= 5
+    cnt_requests -= n
 
     # If the video was not displayed
     if sum_ql == 0:

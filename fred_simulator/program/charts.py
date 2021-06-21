@@ -110,7 +110,6 @@ fig.update_yaxes(title_text='Number of allocated RBs per TTI')
 
 plotly.offline.plot(fig, filename="../results/instant_allocation.html")
 
-
 #########################
 #                       #
 #  PLOT BUFFER LENGTH   #
@@ -153,8 +152,8 @@ for i in range(config.U[0]):
     excel_file = '../results/request.xlsx'
     df = pd.read_excel(excel_file, sheet_name=user)
 
-    data = [go.Scatter( x=df['request_time']/1000, y=df['estimated_throughput']/(10**6), name='Estimated Throughput')]
-    data += [go.Scatter( x=df['request_time']/1000, y=df['bitrate']/(10**6), name='Segment Bitrate')]
+    data = [go.Scatter( x=df['request_time']/1000, y=df['bitrate']/(10**6), name='Segment Bitrate')]
+    data += [go.Scatter( x=df['request_time']/1000, y=df['estimated_throughput']/(10**6), name='Estimated Throughput')]
 
     fig = go.Figure(data)
 
