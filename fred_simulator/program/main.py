@@ -29,7 +29,7 @@ t_init = datetime.datetime.now()
 print(t_init)
 
 
-REPORT = True
+REPORT = False
 
 if REPORT:
     buffer_workbook = xlsxwriter.Workbook('../results/buffer.xlsx')
@@ -58,8 +58,8 @@ if REPORT:
 
 for sim in range(config.Sim):
     # Open excel workbook to store outputs
-    qoe_workbook = xlsxwriter.Workbook('../results/qoe_sim'+str(sim+1)+'.xlsx')
-    qoe_worksheet = qoe_workbook.add_worksheet('Sim'+str(sim+1))
+    qoe_workbook = xlsxwriter.Workbook('../results/qoe_sim'+str(sim+1+3+3+3)+'.xlsx')
+    qoe_worksheet = qoe_workbook.add_worksheet('Sim'+str(sim+1+3+3+3))
 
     for i in range(config.U[-1]):
         qoe_worksheet.write(i+1, 0, 'User'+str(i+1))
