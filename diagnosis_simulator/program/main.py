@@ -107,12 +107,8 @@ for t in range(0, config.T+1, config.TTI):
             delta_buffer[i], rx_bits[i], requests[i] = client.buffer_update(i, requests[i], RB_allocations[i], rx_bits[i], t)
             buffer[i] += delta_buffer[i]
             # Buffer max. capacity; Check if there is enough content for playback after buffering
-            if buffer[i] >= 3*10**3 - 0.1:
-                buffer[i] = config.B
+            if buffer[i] >= config.Binit - 0.1:
                 play[i] = 1
-            #if buffer[i] >= config.B - 0.1:
-            #    buffer[i] = config.B
-            #    play[i] = 1
 
         # Store buffer parameters
         if REPORT:
@@ -129,7 +125,8 @@ for t in range(0, config.T+1, config.TTI):
             # There is space for a new segment and every request has been completly replied
             if config.B - buffer[i] >= 1000 and requests[i][-1]['reply_bits'] == 0: 
                 # Request segment with rate adaptation (RA)
-                requests[i] = client.request_RA(requests[i], t, t_dur_stalls[i], client.throughput_estimation(requests[i]), salient360_dataset, i)
+                #print "MACACO!"
+                requests[i] = client.request_RA(requests[i], t, t_dur_stalls[i], client.throughput_estimation(requests[i]), salient360_dataset, i, buffer[i])
 
             # Client watches TTI seconds of video
             buffer[i] -= config.TTI
@@ -156,9 +153,9 @@ for t in range(0, config.T+1, config.TTI):
         
         # Compute each user metric
         for i in range(config.U):
-        #    metric[i] = server.compute_metric_RR(requests[i], last_reply[i], t)
+            metric[i] = server.compute_metric_RR(requests[i], last_reply[i], t)
         #    metric[i] = server.compute_metric_BET(requests[i], rx_bits[i], t, reported_CQI[i], RB_allocations[i])
-            metric[i] = server.compute_metric_PF(requests[i], rx_bits[i], t, reported_CQI[i], RB_allocations[i], 1, 0)
+        #    metric[i] = server.compute_metric_PF(requests[i], rx_bits[i], t, reported_CQI[i], RB_allocations[i], 1, 0)
         #    metric[i] = server.compute_metric_PF(requests[i], rx_bits[i], t, reported_CQI[i], RB_allocations[i], 1, 1)
 
         # Allocate 1 RB to 1 user
@@ -172,7 +169,7 @@ for t in range(0, config.T+1, config.TTI):
 
 # Compute and store QoE values
 for i in range(config.U):
-    qoe[i] = qoe_model.compute_QoE(cnt_stalls[i], sum_ql[i], sum_ql_sq[i], t_dur_stalls[i])
+    qoe[i] = qoe_model.compute_QoE(i, cnt_stalls[i], sum_ql[i], sum_ql_sq[i], t_dur_stalls[i])
     qoe_worksheet.write(i, 1, qoe[i])
     #qoe_worksheet.write(i, 2, sum_ql[i])
     #qoe_worksheet.write(i, 3, sum_ql_sq[i])

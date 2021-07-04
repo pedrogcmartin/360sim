@@ -13,7 +13,7 @@ T = 60*10**3
 TTI = 1
 
 # Number of users (máx.: 200 users)
-U = 100
+U = 60
 #U = [1, 2, 5, 10, 20, 50, 100]
 #U = [1, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
 
@@ -21,10 +21,14 @@ U = 100
 Sim = 1
 
 # Buffer size (3 s)
+Binit = 3*10**3
 B = 3*10**3
+Bmin = 1*10**3
+Bmax = 1.5*10**3
 
 # Available RB for allocation per TTI
 K = 18
+K = 1
 
 # Total number of video segments
 Ns = 65

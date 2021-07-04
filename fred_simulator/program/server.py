@@ -39,6 +39,7 @@ def compute_metric_BET(request, rx_bits, t, CQI_idx, RB):
     if request[-1]['reply_bits'] > 0:
         #avg_throughput = (rx_bits+(int(round(RB*1000*config.G*12*14*(2**config.mu)*config.eff_CQI[CQI_idx-1]*0.72))/(10**6))*10**-3)/(t+1)
         avg_throughput = (rx_bits*10**6+int(round(RB*1000*config.G*12*7*2*config.eff_CQI[CQI_idx-1]*0.75))*10**-3)/(t+1)
+        #avg_throughput = rx_bits*10**6/(t+1) + int(round(RB*1000*config.G*12*7*2*config.eff_CQI[CQI_idx-1]*0.75))
         m = 1/(avg_throughput+1)
 
     else:
@@ -57,6 +58,7 @@ def compute_metric_PF(request, rx_bits, t, CQI_idx, RB, alpha, beta):
     if request[-1]['reply_bits'] > 0:
         achieved_throughput = int(round(1*1000*config.G*12*7*2*config.eff_CQI[CQI_idx-1]*0.75))
         avg_throughput = (rx_bits*10**6+int(round(RB*1000*config.G*12*7*2*config.eff_CQI[CQI_idx-1]*0.75))*10**-3)/(t+1)
+        #avg_throughput = rx_bits*10**6/(t+1) + int(round(RB*1000*config.G*12*7*2*config.eff_CQI[CQI_idx-1]*0.75))
         m = (achieved_throughput ** alpha)/((avg_throughput+1) ** beta)
 
     else:

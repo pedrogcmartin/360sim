@@ -139,7 +139,7 @@ def weighted_tiles(dataset, U, t):
 
 
 # Computes the estimated throughput perceived by the client's device
-def throughput_estimation(requests, t, user):
+def throughput_estimation(requests):
     j = throughput = 0
 
     for j, i in reversed(list(enumerate(requests))):
@@ -158,16 +158,18 @@ def throughput_estimation(requests, t, user):
 
 # When in buffering event client requests 3s of video (3 segments of 1s) with lowest quality
 def request_LQ(requests, t):
+    x = 1
+
     if t == 0:
-        requests = [{'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[7], 'tiles':[7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], 'reply_bits':config.Nx*config.Ny*config.q[7], 'reply_time':0, 'estimated_throughput':0}]
+        requests = [{'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[x-1], 'tiles':[x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x], 'reply_bits':config.Nx*config.Ny*config.q[x-1], 'reply_time':0, 'estimated_throughput':0}]
 
     else:
-        requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[7], 'tiles':[7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], 'reply_bits':config.Nx*config.Ny*config.q[7], 'reply_time':0, 'estimated_throughput':0})
+        requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[x-1], 'tiles':[x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x], 'reply_bits':config.Nx*config.Ny*config.q[x-1], 'reply_time':0, 'estimated_throughput':0})
     
-    requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[7], 'tiles':[7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], 'reply_bits':config.Nx*config.Ny*config.q[7], 'reply_time':0, 'estimated_throughput':0})
-    requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[7], 'tiles':[7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], 'reply_bits':config.Nx*config.Ny*config.q[7], 'reply_time':0, 'estimated_throughput':0})
-    requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[7], 'tiles':[7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], 'reply_bits':config.Nx*config.Ny*config.q[7], 'reply_time':0, 'estimated_throughput':0})
-    requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[7], 'tiles':[7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], 'reply_bits':config.Nx*config.Ny*config.q[7], 'reply_time':0, 'estimated_throughput':0})
+    requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[x-1], 'tiles':[x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x], 'reply_bits':config.Nx*config.Ny*config.q[x-1], 'reply_time':0, 'estimated_throughput':0})
+    requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[x-1], 'tiles':[x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x], 'reply_bits':config.Nx*config.Ny*config.q[x-1], 'reply_time':0, 'estimated_throughput':0})
+    #requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[x], 'tiles':[x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x], 'reply_bits':config.Nx*config.Ny*config.q[x], 'reply_time':0, 'estimated_throughput':0})
+    #requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[x], 'tiles':[x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x], 'reply_bits':config.Nx*config.Ny*config.q[x], 'reply_time':0, 'estimated_throughput':0})
     
     """if t == 0:
         requests = [{'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[0], 'tiles':[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 'reply_bits':config.Nx*config.Ny*config.q[0], 'reply_time':0, 'estimated_throughput':0}]
@@ -184,10 +186,19 @@ def request_LQ(requests, t):
 
 
 # Rate adpatation segment request
-def request_RA(requests, t, t_dur_stalls, throughput):
+def request_RA(requests, t, t_dur_stalls, throughput, buffer):
     requests.append({'request_time':t, 'bitrate':config.Nx*config.Ny*config.q[0], 'tiles':[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 'reply_bits':config.Nx*config.Ny*config.q[0], 'reply_time':0, 'estimated_throughput':throughput})
 
     budget = throughput# - config.Nx*config.Ny*config.q[0]
+
+    if buffer < config.Bmin:
+        #budget = budget
+        budget = budget*buffer/config.Bmin
+        #print 'a', 'time', t, 'throughput:', throughput, 'budget', budget, 'buffer', buffer, 'Bmin', config.Bmin
+
+    elif buffer > config.Bmax:
+        budget = budget*buffer/config.Bmax
+        #print 'b', 'time', t, 'throughput:', throughput, 'budget', budget, 'buffer', buffer, 'Bmax', config.Bmax
 
     #tiles = weighted_tiles(dataset, U, t-t_dur_stalls)
 

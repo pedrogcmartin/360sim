@@ -29,7 +29,7 @@ t_init = datetime.datetime.now()
 print(t_init)
 
 
-REPORT = False
+REPORT = True
 
 if REPORT:
     buffer_workbook = xlsxwriter.Workbook('../results/buffer.xlsx')
@@ -58,8 +58,8 @@ if REPORT:
 
 for sim in range(config.Sim):
     # Open excel workbook to store outputs
-    qoe_workbook = xlsxwriter.Workbook('../results/qoe_sim'+str(sim+1+3+3+3)+'.xlsx')
-    qoe_worksheet = qoe_workbook.add_worksheet('Sim'+str(sim+1+3+3+3))
+    qoe_workbook = xlsxwriter.Workbook('../results/qoe_sim'+str(sim+1)+'.xlsx')
+    qoe_worksheet = qoe_workbook.add_worksheet('Sim'+str(sim+1))
 
     for i in range(config.U[-1]):
         qoe_worksheet.write(i+1, 0, 'User'+str(i+1))
@@ -112,10 +112,10 @@ for sim in range(config.Sim):
         total_RB_allocations_BET = np.zeros(U, dtype=int)
         metric_BET = np.zeros(U, dtype=float)
         last_reply_BET = np.zeros(U, dtype=float)
-        requests_BET = [[]] * U
+        requests_BET = [[]] * U"""
 
         # MT parameters
-        buffer_MT = np.zeros(U, dtype=float)
+        """buffer_MT = np.zeros(U, dtype=float)
         delta_buffer_MT = np.zeros(U, dtype=float)
         rx_bits_MT = np.zeros(U, dtype=float)
         play_MT = np.zeros(U, dtype=int)
@@ -163,10 +163,10 @@ for sim in range(config.Sim):
         sum_ql_BET = np.zeros(U, dtype=float)
         sum_ql_sq_BET = np.zeros(U, dtype=float)
         sig_quality_BET = np.zeros(U, dtype=float)
-        qoe_BET = np.zeros(U, dtype=float)
+        qoe_BET = np.zeros(U, dtype=float)"""
 
         # MT QoE parameters
-        cnt_stalls_MT = np.zeros(U, dtype=int)
+        """cnt_stalls_MT = np.zeros(U, dtype=int)
         perceived_stall_MT = np.negative(np.ones(U, dtype=int))
         dur_stalls_MT = np.zeros(U, dtype=int)
         t_dur_stalls_MT = np.zeros(U, dtype=int)
@@ -209,7 +209,7 @@ for sim in range(config.Sim):
                     #if buffer_RR[i] >= config.B - 0.1:
                     #    buffer_RR[i] = config.B
                     #    play_RR[i] = 1
-                    if buffer_RR[i] >= 5*10**3 - 0.1:
+                    if buffer_RR[i] >= config.Binit - 0.1:
                         play_RR[i] = 1
 
                 # BET
@@ -222,10 +222,10 @@ for sim in range(config.Sim):
                     #    buffer_BET[i] = config.B
                     #    play_BET[i] = 1
                     if buffer_BET[i] >= 5*10**3 - 0.1:
-                        play_BET[i] = 1
+                        play_BET[i] = 1"""
 
                 # MT
-                if RB_allocations_MT[i] != 0:
+                """if RB_allocations_MT[i] != 0:
                     delta_buffer_MT[i], rx_bits_MT[i], requests_MT[i] = client.buffer_update(user_CQI[i], requests_MT[i], RB_allocations_MT[i], rx_bits_MT[i], t)
                     buffer_MT[i] += delta_buffer_MT[i]
                     
@@ -250,6 +250,7 @@ for sim in range(config.Sim):
                 # Store buffer parameters
                 if REPORT:
                     client.store_buffer(t, i, buffer_worksheet, allocation_worksheet, buffer_RR[i], play_RR[i], rx_bits_RR[i], reported_CQI[i], metric_RR[i], total_RB_allocations_RR[i], RB_allocations_RR[i])
+                    #client.store_buffer(t, i, buffer_worksheet, allocation_worksheet, buffer_BET[i], play_BET[i], rx_bits_BET[i], reported_CQI[i], metric_BET[i], total_RB_allocations_BET[i], RB_allocations_BET[i])
 
                 # Buffering event
                 # RR
@@ -263,7 +264,7 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if requests_RR[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_RR[i] = client.request_RA(requests_RR[i], t, t_dur_stalls_RR[i],client.throughput_estimation(requests_RR[i], t, i))
+                        requests_RR[i] = client.request_RA(requests_RR[i], t, t_dur_stalls_RR[i], client.throughput_estimation(requests_RR[i]), buffer_RR[i])
 
                     # Client watches TTI seconds of video
                     buffer_RR[i] -= config.TTI
@@ -284,7 +285,7 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if requests_BET[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_BET[i] = client.request_RA(requests_BET[i], t, t_dur_stalls_BET[i],client.throughput_estimation(requests_BET[i]))
+                        requests_BET[i] = client.request_RA(requests_BET[i], t, t_dur_stalls_BET[i], client.throughput_estimation(requests_BET[i]))
 
                     # Client watches TTI seconds of video
                     buffer_BET[i] -= config.TTI
@@ -292,10 +293,10 @@ for sim in range(config.Sim):
                     # Client suffers a stall event
                     if buffer_BET[i] <= 0:
                         buffer_BET[i] = 0
-                        play_BET[i] = 0
+                        play_BET[i] = 0"""
 
                 # MT
-                if play_MT[i] == 0:
+                """if play_MT[i] == 0:
                     if not requests_MT[i] or requests_MT[i][-1]['reply_bits'] == 0:
                         # Initial buffering - Request every tile with the lowest quality or if there is space - Request every tile with the lowest quality
                         requests_MT[i] = client.request_LQ(requests_MT[i], t)
@@ -305,7 +306,7 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if requests_MT[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_MT[i] = client.request_RA(requests_MT[i], t, t_dur_stalls_MT[i],client.throughput_estimation(requests_MT[i]))
+                        requests_MT[i] = client.request_RA(requests_MT[i], t, t_dur_stalls_MT[i], client.throughput_estimation(requests_MT[i]))
 
                     # Client watches TTI seconds of video
                     buffer_MT[i] -= config.TTI
@@ -326,7 +327,7 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if requests_PF[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_PF[i] = client.request_RA(requests_PF[i], t, t_dur_stalls_PF[i],client.throughput_estimation(requests_PF[i]))
+                        requests_PF[i] = client.request_RA(requests_PF[i], t, t_dur_stalls_PF[i], client.throughput_estimation(requests_PF[i]))
 
                     # Client watches TTI seconds of video
                     buffer_PF[i] -= config.TTI
@@ -405,9 +406,9 @@ for sim in range(config.Sim):
 
         """qoe_worksheet.write(config.U[-1]+2, len(config.U)*1+idx+1, sum(i >= 3 for i in qoe_BET)/float(U))
         qoe_worksheet.write(config.U[-1]+3, len(config.U)*1+idx+1, sum(i >= 4 for i in qoe_BET)/float(U))
-        qoe_worksheet.write(config.U[-1]+4, len(config.U)*1+idx+1, sum(i < 2 for i in qoe_BET)/float(U))
+        qoe_worksheet.write(config.U[-1]+4, len(config.U)*1+idx+1, sum(i < 2 for i in qoe_BET)/float(U))"""
 
-        qoe_worksheet.write(config.U[-1]+2, len(config.U)*2+idx+1, sum(i >= 3 for i in qoe_MT)/float(U))
+        """qoe_worksheet.write(config.U[-1]+2, len(config.U)*2+idx+1, sum(i >= 3 for i in qoe_MT)/float(U))
         qoe_worksheet.write(config.U[-1]+3, len(config.U)*2+idx+1, sum(i >= 4 for i in qoe_MT)/float(U))
         qoe_worksheet.write(config.U[-1]+4, len(config.U)*2+idx+1, sum(i < 2 for i in qoe_MT)/float(U))
 

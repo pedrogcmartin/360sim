@@ -25,7 +25,7 @@ q_max = len(config.q)
 #########################
 
 # Compute QoE Value
-def compute_QoE(cnt_stalls, sum_ql, sum_ql_sq, t_dur_stalls):
+def compute_QoE(U, cnt_stalls, sum_ql, sum_ql_sq, t_dur_stalls):
     # If the video was not displayed
     if sum_ql == 0:
         return 0
@@ -51,6 +51,8 @@ def compute_QoE(cnt_stalls, sum_ql, sum_ql_sq, t_dur_stalls):
 
         except (ValueError, ZeroDivisionError):
             qoe = max(5.67*(avg_quality/float(q_max))-6.72*(sig_quality/float(q_max))+0.17-4.95*(1.0/8.0)*min(avg_stall, 15)/15.0, 0)
+
+        print "User", U+1, "sum_ql:", sum_ql, "sum_ql_sq:", sum_ql_sq, "avg_quality:", avg_quality, "avg_stall:", avg_stall, "sig_quality:", sig_quality, "cnt_stalls:", cnt_stalls, "t_dur_stalls:", t_dur_stalls, "qoe:", qoe
 
         return qoe
 

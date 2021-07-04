@@ -33,8 +33,8 @@ salient360_dataset = client.open_file()
 
 for sim in range(config.Sim):
     # Open excel workbook to store outputs
-    qoe_workbook = xlsxwriter.Workbook('../results/qoe_sim'+str(sim+1+3)+'.xlsx')
-    qoe_worksheet = qoe_workbook.add_worksheet('Sim'+str(sim+1+3))
+    qoe_workbook = xlsxwriter.Workbook('../results/qoe_simOLD_RR'+str(sim+1)+'.xlsx')
+    qoe_worksheet = qoe_workbook.add_worksheet('Sim'+str(sim+1))
 
     for i in range(config.U[-1]):
         qoe_worksheet.write(i+1, 0, 'User'+str(i+1))
@@ -79,7 +79,7 @@ for sim in range(config.Sim):
         requests_RR = [[]] * U
 
         # BET parameters
-        buffer_BET = np.zeros(U, dtype=float)
+        """buffer_BET = np.zeros(U, dtype=float)
         delta_buffer_BET = np.zeros(U, dtype=float)
         rx_bits_BET = np.zeros(U, dtype=float)
         play_BET = np.zeros(U, dtype=int)
@@ -109,7 +109,7 @@ for sim in range(config.Sim):
         total_RB_allocations_PF = np.zeros(U, dtype=int)
         metric_PF = np.zeros(U, dtype=float)
         last_reply_PF = np.zeros(U, dtype=float)
-        requests_PF = [[]] * U
+        requests_PF = [[]] * U"""
 
         # QoE parameters
         # RR QoE parameters
@@ -127,7 +127,7 @@ for sim in range(config.Sim):
         qoe_RR = np.zeros(U, dtype=float)
 
         # BET QoE parameters
-        cnt_stalls_BET = np.zeros(U, dtype=int)
+        """cnt_stalls_BET = np.zeros(U, dtype=int)
         perceived_stall_BET = np.negative(np.ones(U, dtype=int))
         dur_stalls_BET = np.zeros(U, dtype=int)
         t_dur_stalls_BET = np.zeros(U, dtype=int)
@@ -166,13 +166,14 @@ for sim in range(config.Sim):
         sum_ql_PF = np.zeros(U, dtype=float)
         sum_ql_sq_PF = np.zeros(U, dtype=float)
         sig_quality_PF = np.zeros(U, dtype=float)
-        qoe_PF = np.zeros(U, dtype=float)
+        qoe_PF = np.zeros(U, dtype=float)"""
 
         for t in range(0, config.T+1, config.TTI):
             # CLIENT SIDE
+            #print
             for i in range(U):
                 # Get user's current CQI
-                user_CQI[i] = client.get_CQI(i, t)
+                user_CQI[i] = client.get_CQI(i, t, sim)
                 
                 # Update buffer
                 # RR
@@ -185,7 +186,7 @@ for sim in range(config.Sim):
                         #buffer_RR[i] = config.B
                         play_RR[i] = 1
                 # BET
-                if RB_allocations_BET[i] != 0:
+                """if RB_allocations_BET[i] != 0:
                     delta_buffer_BET[i], rx_bits_BET[i], requests_BET[i] = client.buffer_update(user_CQI[i], requests_BET[i], RB_allocations_BET[i], rx_bits_BET[i], t)
                     buffer_BET[i] += delta_buffer_BET[i]
 
@@ -211,7 +212,7 @@ for sim in range(config.Sim):
                     # Buffer max. capacity; Check if there is enough content for playback after buffering
                     if buffer_PF[i] >= config.init - 0.1:
                         #buffer_PF[i] = config.B
-                        play_PF[i] = 1
+                        play_PF[i] = 1"""
 
                 # Buffering event
                 # RR
@@ -225,7 +226,7 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if config.B - buffer_RR[i] >= 1000 and requests_RR[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_RR[i] = client.request_RA(requests_RR[i], t, t_dur_stalls_RR[i],client.throughput_estimation(requests_RR[i]), salient360_dataset, i)
+                        requests_RR[i] = client.request_RA(requests_RR[i], t, t_dur_stalls_RR[i],client.throughput_estimation(requests_RR[i]), salient360_dataset, i, buffer_RR[i], sim)
 
                     # Client watches TTI seconds of video
                     buffer_RR[i] -= config.TTI
@@ -236,7 +237,7 @@ for sim in range(config.Sim):
                         play_RR[i] = 0
 
                 # BET
-                if play_BET[i] == 0:
+                """if play_BET[i] == 0:
                     if not requests_BET[i] or requests_BET[i][-1]['reply_bits'] == 0:
                         # Initial buffering - Request every tile with the lowest quality or if there is space - Request every tile with the lowest quality
                         requests_BET[i] = client.request_LQ(requests_BET[i], t)
@@ -246,7 +247,7 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if config.B - buffer_BET[i] >= 1000 and requests_BET[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_BET[i] = client.request_RA(requests_BET[i], t, t_dur_stalls_BET[i],client.throughput_estimation(requests_BET[i]), salient360_dataset, i)
+                        requests_BET[i] = client.request_RA(requests_BET[i], t, t_dur_stalls_BET[i],client.throughput_estimation(requests_BET[i]), salient360_dataset, i, buffer_BET[i], sim)
 
                     # Client watches TTI seconds of video
                     buffer_BET[i] -= config.TTI
@@ -267,7 +268,7 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if config.B - buffer_MT[i] >= 1000 and requests_MT[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_MT[i] = client.request_RA(requests_MT[i], t, t_dur_stalls_MT[i],client.throughput_estimation(requests_MT[i]), salient360_dataset, i)
+                        requests_MT[i] = client.request_RA(requests_MT[i], t, t_dur_stalls_MT[i],client.throughput_estimation(requests_MT[i]), salient360_dataset, i, buffer_MT[i], sim)
 
                     # Client watches TTI seconds of video
                     buffer_MT[i] -= config.TTI
@@ -288,7 +289,7 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if config.B - buffer_PF[i] >= 1000 and requests_PF[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_PF[i] = client.request_RA(requests_PF[i], t, t_dur_stalls_PF[i],client.throughput_estimation(requests_PF[i]), salient360_dataset, i)
+                        requests_PF[i] = client.request_RA(requests_PF[i], t, t_dur_stalls_PF[i],client.throughput_estimation(requests_PF[i]), salient360_dataset, i, buffer_PF[i], sim)
 
                     # Client watches TTI seconds of video
                     buffer_PF[i] -= config.TTI
@@ -296,44 +297,44 @@ for sim in range(config.Sim):
                     # Client suffers a stall event
                     if buffer_PF[i] <= 0:
                         buffer_PF[i] = 0
-                        play_PF[i] = 0
+                        play_PF[i] = 0"""
 
                 # Update QoE inputs
-                cnt_stalls_RR[i], perceived_stall_RR[i], dur_stalls_RR[i], t_dur_stalls_RR[i], sum_ql_RR[i], sum_ql_sq_RR[i], flg_qoe_RR[i], flg_qoe_init_RR[i]  = qoe_model.update_QoE(cnt_stalls_RR[i], perceived_stall_RR[i], dur_stalls_RR[i], t_dur_stalls_RR[i], sum_ql_RR[i], sum_ql_sq_RR[i], play_RR[i], flg_qoe_RR[i], flg_qoe_init_RR[i], requests_RR[i], salient360_dataset, i, t)
-                cnt_stalls_BET[i], perceived_stall_BET[i], dur_stalls_BET[i], t_dur_stalls_BET[i], sum_ql_BET[i], sum_ql_sq_BET[i], flg_qoe_BET[i], flg_qoe_init_BET[i]  = qoe_model.update_QoE(cnt_stalls_BET[i], perceived_stall_BET[i], dur_stalls_BET[i], t_dur_stalls_BET[i], sum_ql_BET[i], sum_ql_sq_BET[i], play_BET[i], flg_qoe_BET[i], flg_qoe_init_BET[i], requests_BET[i], salient360_dataset, i, t)
-                cnt_stalls_MT[i], perceived_stall_MT[i], dur_stalls_MT[i], t_dur_stalls_MT[i], sum_ql_MT[i], sum_ql_sq_MT[i], flg_qoe_MT[i], flg_qoe_init_MT[i]  = qoe_model.update_QoE(cnt_stalls_MT[i], perceived_stall_MT[i], dur_stalls_MT[i], t_dur_stalls_MT[i], sum_ql_MT[i], sum_ql_sq_MT[i], play_MT[i], flg_qoe_MT[i], flg_qoe_init_MT[i], requests_MT[i], salient360_dataset, i, t)
-                cnt_stalls_PF[i], perceived_stall_PF[i], dur_stalls_PF[i], t_dur_stalls_PF[i], sum_ql_PF[i], sum_ql_sq_PF[i], flg_qoe_PF[i], flg_qoe_init_PF[i]  = qoe_model.update_QoE(cnt_stalls_PF[i], perceived_stall_PF[i], dur_stalls_PF[i], t_dur_stalls_PF[i], sum_ql_PF[i], sum_ql_sq_PF[i], play_PF[i], flg_qoe_PF[i], flg_qoe_init_PF[i], requests_PF[i], salient360_dataset, i, t)
+                cnt_stalls_RR[i], perceived_stall_RR[i], dur_stalls_RR[i], t_dur_stalls_RR[i], sum_ql_RR[i], sum_ql_sq_RR[i], flg_qoe_RR[i], flg_qoe_init_RR[i]  = qoe_model.update_QoE(cnt_stalls_RR[i], perceived_stall_RR[i], dur_stalls_RR[i], t_dur_stalls_RR[i], sum_ql_RR[i], sum_ql_sq_RR[i], play_RR[i], flg_qoe_RR[i], flg_qoe_init_RR[i], requests_RR[i], salient360_dataset, i, t, sim)
+                """cnt_stalls_BET[i], perceived_stall_BET[i], dur_stalls_BET[i], t_dur_stalls_BET[i], sum_ql_BET[i], sum_ql_sq_BET[i], flg_qoe_BET[i], flg_qoe_init_BET[i]  = qoe_model.update_QoE(cnt_stalls_BET[i], perceived_stall_BET[i], dur_stalls_BET[i], t_dur_stalls_BET[i], sum_ql_BET[i], sum_ql_sq_BET[i], play_BET[i], flg_qoe_BET[i], flg_qoe_init_BET[i], requests_BET[i], salient360_dataset, i, t, sim)
+                cnt_stalls_MT[i], perceived_stall_MT[i], dur_stalls_MT[i], t_dur_stalls_MT[i], sum_ql_MT[i], sum_ql_sq_MT[i], flg_qoe_MT[i], flg_qoe_init_MT[i]  = qoe_model.update_QoE(cnt_stalls_MT[i], perceived_stall_MT[i], dur_stalls_MT[i], t_dur_stalls_MT[i], sum_ql_MT[i], sum_ql_sq_MT[i], play_MT[i], flg_qoe_MT[i], flg_qoe_init_MT[i], requests_MT[i], salient360_dataset, i, t, sim)
+                cnt_stalls_PF[i], perceived_stall_PF[i], dur_stalls_PF[i], t_dur_stalls_PF[i], sum_ql_PF[i], sum_ql_sq_PF[i], flg_qoe_PF[i], flg_qoe_init_PF[i]  = qoe_model.update_QoE(cnt_stalls_PF[i], perceived_stall_PF[i], dur_stalls_PF[i], t_dur_stalls_PF[i], sum_ql_PF[i], sum_ql_sq_PF[i], play_PF[i], flg_qoe_PF[i], flg_qoe_init_PF[i], requests_PF[i], salient360_dataset, i, t, sim)"""
 
                 # Report CQI
                 if t % 5 == 0:
-                    reported_CQI[i] = client.get_CQI(i, t)
+                    reported_CQI[i] = client.get_CQI(i, t, sim)
 
             # SERVER SIDE
             RB_allocations_RR = np.zeros(U, dtype=int)
-            RB_allocations_BET = np.zeros(U, dtype=int)
+            """RB_allocations_BET = np.zeros(U, dtype=int)
             RB_allocations_MT = np.zeros(U, dtype=int)
-            RB_allocations_PF = np.zeros(U, dtype=int)
+            RB_allocations_PF = np.zeros(U, dtype=int)"""
 
             # Allocate each Kth RB
             for k in range(config.K):
                 # Initialize metrics/RB_allocations arrays
                 metric_RR = np.negative(np.ones(U, dtype=float))
-                metric_BET = np.negative(np.ones(U, dtype=float))
+                """metric_BET = np.negative(np.ones(U, dtype=float))
                 metric_MT = np.negative(np.ones(U, dtype=float))
-                metric_PF = np.negative(np.ones(U, dtype=float))
+                metric_PF = np.negative(np.ones(U, dtype=float))"""
                 
                 # Compute each user metric
                 for i in range(U):
                     metric_RR[i] = server.compute_metric_RR(requests_RR[i], last_reply_RR[i], t)
-                    metric_BET[i] = server.compute_metric_BET(requests_BET[i], rx_bits_BET[i], t, reported_CQI[i], RB_allocations_BET[i])
+                    """metric_BET[i] = server.compute_metric_BET(requests_BET[i], rx_bits_BET[i], t, reported_CQI[i], RB_allocations_BET[i])
                     metric_MT[i] = server.compute_metric_PF(requests_MT[i], rx_bits_MT[i], t, reported_CQI[i], RB_allocations_MT[i], 1, 0)
-                    metric_PF[i] = server.compute_metric_PF(requests_PF[i], rx_bits_PF[i], t, reported_CQI[i], RB_allocations_PF[i], 1, 1)
+                    metric_PF[i] = server.compute_metric_PF(requests_PF[i], rx_bits_PF[i], t, reported_CQI[i], RB_allocations_PF[i], 1, 1)"""
             
                 # Allocate 1 RB to 1 user
                 last_reply_RR, RB_allocations_RR, total_RB_allocations_RR = server.allocation(metric_RR, RB_allocations_RR, total_RB_allocations_RR, last_reply_RR, float(t) + float(k)/1000.0)
-                last_reply_BET, RB_allocations_BET, total_RB_allocations_BET = server.allocation(metric_BET, RB_allocations_BET, total_RB_allocations_BET, last_reply_BET, float(t) + float(k)/1000.0)
+                """last_reply_BET, RB_allocations_BET, total_RB_allocations_BET = server.allocation(metric_BET, RB_allocations_BET, total_RB_allocations_BET, last_reply_BET, float(t) + float(k)/1000.0)
                 last_reply_MT, RB_allocations_MT, total_RB_allocations_MT = server.allocation(metric_MT, RB_allocations_MT, total_RB_allocations_MT, last_reply_MT, float(t) + float(k)/1000.0)
-                last_reply_PF, RB_allocations_PF, total_RB_allocations_PF = server.allocation(metric_PF, RB_allocations_PF, total_RB_allocations_PF, last_reply_PF, float(t) + float(k)/1000.0)
+                last_reply_PF, RB_allocations_PF, total_RB_allocations_PF = server.allocation(metric_PF, RB_allocations_PF, total_RB_allocations_PF, last_reply_PF, float(t) + float(k)/1000.0)"""
 
             # Update running status
             if not t % 2500:
@@ -341,15 +342,15 @@ for sim in range(config.Sim):
 
         # Compute and store QoE values
         for i in range(U):
-            qoe_RR[i] = qoe_model.compute_QoE(cnt_stalls_RR[i], sum_ql_RR[i], sum_ql_sq_RR[i], t_dur_stalls_RR[i])
-            qoe_BET[i] = qoe_model.compute_QoE(cnt_stalls_BET[i], sum_ql_BET[i], sum_ql_sq_BET[i], t_dur_stalls_BET[i])
+            qoe_RR[i] = qoe_model.compute_QoE(i, cnt_stalls_RR[i], sum_ql_RR[i], sum_ql_sq_RR[i], t_dur_stalls_RR[i])
+            """qoe_BET[i] = qoe_model.compute_QoE(cnt_stalls_BET[i], sum_ql_BET[i], sum_ql_sq_BET[i], t_dur_stalls_BET[i])
             qoe_MT[i] = qoe_model.compute_QoE(cnt_stalls_MT[i], sum_ql_MT[i], sum_ql_sq_MT[i], t_dur_stalls_MT[i])
-            qoe_PF[i] = qoe_model.compute_QoE(cnt_stalls_PF[i], sum_ql_PF[i], sum_ql_sq_PF[i], t_dur_stalls_PF[i])
+            qoe_PF[i] = qoe_model.compute_QoE(cnt_stalls_PF[i], sum_ql_PF[i], sum_ql_sq_PF[i], t_dur_stalls_PF[i])"""
 
             qoe_worksheet.write(i+1, len(config.U)*0+idx+1, qoe_RR[i])
-            qoe_worksheet.write(i+1, len(config.U)*1+idx+1, qoe_BET[i])
+            """qoe_worksheet.write(i+1, len(config.U)*1+idx+1, qoe_BET[i])
             qoe_worksheet.write(i+1, len(config.U)*2+idx+1, qoe_MT[i])
-            qoe_worksheet.write(i+1, len(config.U)*3+idx+1, qoe_PF[i])
+            qoe_worksheet.write(i+1, len(config.U)*3+idx+1, qoe_PF[i])"""
 
             #qoe_worksheet.write(i, 1, qoe[i])
             #qoe_worksheet.write(i, idx+2, sum_ql[i])
@@ -363,7 +364,7 @@ for sim in range(config.Sim):
         qoe_worksheet.write(config.U[-1]+3, len(config.U)*0+idx+1, sum(i >= 4 for i in qoe_RR)/float(U))
         qoe_worksheet.write(config.U[-1]+4, len(config.U)*0+idx+1, sum(i < 2 for i in qoe_RR)/float(U))
 
-        qoe_worksheet.write(config.U[-1]+2, len(config.U)*1+idx+1, sum(i >= 3 for i in qoe_BET)/float(U))
+        """qoe_worksheet.write(config.U[-1]+2, len(config.U)*1+idx+1, sum(i >= 3 for i in qoe_BET)/float(U))
         qoe_worksheet.write(config.U[-1]+3, len(config.U)*1+idx+1, sum(i >= 4 for i in qoe_BET)/float(U))
         qoe_worksheet.write(config.U[-1]+4, len(config.U)*1+idx+1, sum(i < 2 for i in qoe_BET)/float(U))
 
@@ -373,7 +374,7 @@ for sim in range(config.Sim):
 
         qoe_worksheet.write(config.U[-1]+2, len(config.U)*3+idx+1, sum(i >= 3 for i in qoe_PF)/float(U))
         qoe_worksheet.write(config.U[-1]+3, len(config.U)*3+idx+1, sum(i >= 4 for i in qoe_PF)/float(U))
-        qoe_worksheet.write(config.U[-1]+4, len(config.U)*3+idx+1, sum(i < 2 for i in qoe_PF)/float(U))
+        qoe_worksheet.write(config.U[-1]+4, len(config.U)*3+idx+1, sum(i < 2 for i in qoe_PF)/float(U))"""
 
 
     qoe_workbook.close()

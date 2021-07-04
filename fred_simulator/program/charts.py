@@ -26,7 +26,7 @@ import config
 
 data = []
 
-excel_file = '../results/buffer.xlsx'
+"""excel_file = '../results/buffer.xlsx'
 df = pd.read_excel(excel_file)
 
 for i in range(int((len(df.columns)-1)/5)):
@@ -61,7 +61,8 @@ fig = go.Figure(data)
 fig.update_xaxes(title_text='Time [s]')
 fig.update_yaxes(title_text='Average Throughput [Mbps]')
 
-plotly.offline.plot(fig, filename="../results/avg_throughput.html")
+#plotly.offline.plot(fig, filename="../results/avg_throughputOLD.html")
+plotly.offline.plot(fig, filename="../results/avg_throughputNEW.html")
 
 # ACHIEVED THROUGHPUT
 data = []
@@ -74,7 +75,9 @@ fig = go.Figure(data)
 fig.update_xaxes(title_text='Time [s]')
 fig.update_yaxes(title_text='Achieved Throughput [Mbps]')
 
-plotly.offline.plot(fig, filename="../results/ach_throughput.html")
+#plotly.offline.plot(fig, filename="../results/ach_throughputOLD.html")
+plotly.offline.plot(fig, filename="../results/ach_throughputNEW.html")
+
 
 
 #########################
@@ -108,7 +111,7 @@ fig = go.Figure(data)
 fig.update_xaxes(title_text='Time [s]')
 fig.update_yaxes(title_text='Number of allocated RBs per TTI')
 
-plotly.offline.plot(fig, filename="../results/instant_allocation.html")
+plotly.offline.plot(fig, filename="../results/instant_allocation.html")"""
 
 #########################
 #                       #
@@ -134,7 +137,8 @@ for i in range(config.U[0]):
     fig.update_xaxes(title_text='Time [s]')
     fig.update_yaxes(title_text='Buffer length [s]')
 
-    plotly.offline.plot(fig, filename="../results/buffer/buffer"+str(user_id)+".html")
+    #plotly.offline.plot(fig, filename="../results/buffer/bufferOLD"+str(user_id)+".html")
+    plotly.offline.plot(fig, filename="../results/buffer/bufferNEW"+str(user_id)+".html")
 
 
 #########################
@@ -160,4 +164,5 @@ for i in range(config.U[0]):
     fig.update_xaxes(title_text='Time [s]')
     fig.update_yaxes(title_text='Mbps')
 
-    plotly.offline.plot(fig, filename="../results/request/request"+str(user_id)+".html")
+    #plotly.offline.plot(fig, filename="../results/request/requestOLD"+str(user_id)+".html")
+    plotly.offline.plot(fig, filename="../results/request/requestNEW"+str(user_id)+".html")
