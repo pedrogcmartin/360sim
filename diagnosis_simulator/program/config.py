@@ -7,27 +7,32 @@
 ################################################################################# 
  
 # Simulation total time duration
-T = 60*10**3
+T = 180*10**3
 
 # TTI length
 TTI = 1
 
+t_exc = 2*10**3
+
 # Number of users (máx.: 200 users)
-U = 60
 #U = [1, 2, 5, 10, 20, 50, 100]
 #U = [1, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+U = 1
 
-# Number of simulations per scenario
-Sim = 1
+# Estimation throughput parameters
+w = 0.875
+theta = 0.020*10**3
 
 # Buffer size (3 s)
 Binit = 3*10**3
+epsilon = 0.01
+
 B = 3*10**3
-Bmin = 1*10**3
-Bmax = 1.5*10**3
+
+Bmin = 1.8*10**3
+Bmax = 1.8*10**3
 
 # Available RB for allocation per TTI
-K = 18
 K = 1
 
 # Total number of video segments
@@ -48,7 +53,7 @@ Nx = 6
 Ny = 4
 
 # MIMO Gain
-G = 1
+G = 0.435
 
 # 15 CQI efficiencies
 eff_CQI = [0.1523, 0.3370, 0.8770, 1.4766, 1.9141, 2.4063, 2.7305, 3.3223, 3.9023, 4.5234, 5.1152, 5.5547, 6.2266, 6.9141, 7.4063]
@@ -62,4 +67,33 @@ eff_CQI = [0.1523, 0.3370, 0.8770, 1.4766, 1.9141, 2.4063, 2.7305, 3.3223, 3.902
 
 # UnderwaterPark video bitrates per tile (assuming 6x4 tiling scheme)
 filename = '17_UnderwaterPark_fixations.csv'
-q = [23848, 31621, 41926, 55590, 73707, 97729]
+
+#Corresponds to: [390000, 499992, 670008, 900000, 1300008, 1780008, 2269992]
+q = [16250, 20833, 27917, 37500, 54167, 74167, 94583]
+
+q_qaad = [390000, 408332, 463328, 499992, 528328, 613336, 670008, 708340, 823336, 900000, 966668, 1166672, 1300008, 1380008, 1620008, 1780008, 1861672, 2106664, 2269992]
+q_qaad_idx = [[1, 1, 1], [2, 1, 1], [2, 2, 1], [2, 2, 2], [3, 2, 2], [3, 3, 2], [3, 3, 3], [4, 3, 3], [4, 4, 3], [4, 4, 4], [5, 4, 4], [5, 5, 4], [5, 5, 5], [6, 5, 5], [6, 6, 5], [6, 6, 6], [7, 6, 6], [7, 7, 6], [7, 7, 7]]
+
+QAAD_mu = 1.0*10**3
+QAAD_sigma = 0.1*10**3
+
+gamma = 60
+"""for i in range(len(q)):
+    a.append(q[i]*24)
+    try:
+        a.append(q[i+1]*4+q[i]*20)
+        a.append(q[i+1]*16+q[i]*8)
+    except:
+        break
+
+print(a)"""
+
+"""for i in range(len(q)):
+    a.append([i+1, i+1, i+1])
+    try:
+        a.append([i+2, i+1, i+1])
+        a.append([i+2, i+2, i+1])
+    except:
+        break
+
+print(a)"""

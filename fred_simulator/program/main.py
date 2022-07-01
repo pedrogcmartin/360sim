@@ -150,6 +150,8 @@ for sim in range(config.Sim):
         sum_ql_sq_RR = np.zeros(U, dtype=float)
         sig_quality_RR = np.zeros(U, dtype=float)
         qoe_RR = np.zeros(U, dtype=float)
+        K_bits_RR = np.zeros(U, dtype=float)
+        throughput_RR = np.zeros(U, dtype=float)
 
         # BET QoE parameters
         """cnt_stalls_BET = np.zeros(U, dtype=int)
@@ -199,10 +201,14 @@ for sim in range(config.Sim):
                 # Get user's current CQI
                 user_CQI[i] = client.get_CQI(i, t, sim)
 
+                if not t % config.theta and t != 0:
+                    throughput_RR[i] = client.estimate_throughput(throughput_RR[i], K_bits_RR[i], t, buffer_RR[i])
+                    K_bits_RR[i] = 0
+
                 # Update buffer
                 # RR
                 if RB_allocations_RR[i] != 0:
-                    delta_buffer_RR[i], rx_bits_RR[i], requests_RR[i] = client.buffer_update(user_CQI[i], requests_RR[i], RB_allocations_RR[i], rx_bits_RR[i], t)
+                    delta_buffer_RR[i], rx_bits_RR[i], K_bits_RR[i], requests_RR[i] = client.buffer_update(user_CQI[i], requests_RR[i], RB_allocations_RR[i], rx_bits_RR[i], K_bits_RR[i], t)
                     buffer_RR[i] += delta_buffer_RR[i]
 
                     # Buffer max. capacity; Check if there is enough content for playback after buffering
@@ -264,7 +270,9 @@ for sim in range(config.Sim):
                     # There is space for a new segment and every request has been completly replied
                     if requests_RR[i][-1]['reply_bits'] == 0: 
                         # Request segment with rate adaptation (RA)
-                        requests_RR[i] = client.request_RA(requests_RR[i], t, t_dur_stalls_RR[i], client.throughput_estimation(requests_RR[i]), buffer_RR[i])
+                        requests_RR[i] = client.request_RA_QAAD(requests_RR[i], t, throughput_RR[i], buffer_RR[i])
+                        #requests_RR[i] = client.request_RA_QAAD(requests_RR[i], t, client.throughput_estimation(requests_RR[i]), buffer_RR[i])
+                        #requests_RR[i] = client.request_RA(requests_RR[i], t, t_dur_stalls_RR[i], client.throughput_estimation(requests_RR[i]), buffer_RR[i])
 
                     # Client watches TTI seconds of video
                     buffer_RR[i] -= config.TTI
@@ -382,7 +390,7 @@ for sim in range(config.Sim):
 
         # Compute and store QoE values
         for i in range(U):
-            qoe_RR[i] = qoe_model.compute_QoE(cnt_stalls_RR[i], t_dur_stalls_RR[i], requests_RR[i])
+            #qoe_RR[i] = qoe_model.compute_QoE(cnt_stalls_RR[i], t_dur_stalls_RR[i], requests_RR[i])
             #qoe_BET[i] = qoe_model.compute_QoE(cnt_stalls_BET[i], t_dur_stalls_BET[i], requests_BET[i])
             #qoe_MT[i] = qoe_model.compute_QoE(cnt_stalls_MT[i], t_dur_stalls_MT[i], requests_MT[i])
             #qoe_PF[i] = qoe_model.compute_QoE(cnt_stalls_PF[i], t_dur_stalls_PF[i], requests_PF[i])
@@ -426,19 +434,30 @@ for sim in range(config.Sim):
 if REPORT:
     # Store requests parameters
     header = ['request_time', 'bitrate', 't0', 't1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10', 't11', 't12', 't13', 't14', 't15', 't16', 't17', 't18', 't19', 't20', 't21', 't22', 't23', 'reply_time', 'estimated_throughput']
+    
     for idx1, i in enumerate(requests_RR):
         request_worksheet = request_workbook.add_worksheet('User'+str(idx1+1))
         for header_col in range (28):
             request_worksheet.write(0, header_col, header[header_col])
+
         for idx2, j in enumerate(i):
             for idx3, k in enumerate(j.values()):
                 if idx3 < 2:
                     request_worksheet.write(idx2+1, idx3, k)
+
                 elif idx3 == 2:
                     for idx4, l in enumerate(k):
                         request_worksheet.write(idx2+1, idx3+idx4, l)
+
                 elif idx3 >= 4:
                     request_worksheet.write(idx2+1, idx3+(config.Nx*config.Ny)-2, k)
+
+                    if idx3 == 5 and idx2 == 5:
+                        request_worksheet.write(idx2+0, idx3+(config.Nx*config.Ny)-2, k)
+                        request_worksheet.write(idx2-1, idx3+(config.Nx*config.Ny)-2, k)
+                        request_worksheet.write(idx2-2, idx3+(config.Nx*config.Ny)-2, k)
+                        request_worksheet.write(idx2-3, idx3+(config.Nx*config.Ny)-2, k)
+                        request_worksheet.write(idx2-4, idx3+(config.Nx*config.Ny)-2, k)
 
     buffer_workbook.close()
     allocation_workbook.close()
